@@ -188,6 +188,60 @@ for chunk in resp:
 
 > 💡 也可直接传 Cursor 原生模型名 (如 `composer-2`、`claude-4.5-sonnet-thinking`)，会直接透传。
 
+## 🐳 Docker
+
+### 使用预构建镜像
+
+```bash
+# 拉取镜像
+docker pull ghcr.io/fengzhiqiu/cursoride2api:latest
+
+# 运行
+docker run -d \
+  --name cursoride2api \
+  -p 3000:3000 \
+  -v $(pwd)/token.json:/app/token.json:ro \
+  -e API_KEY=your-secret-key \
+  ghcr.io/fengzhiqiu/cursoride2api:latest
+```
+
+### 本地构建
+
+```bash
+git clone https://github.com/fengzhiqiu/cursoride2api.git
+cd cursoride2api
+docker build -t cursoride2api .
+docker run -d -p 3000:3000 -v $(pwd)/token.json:/app/token.json:ro cursoride2api
+```
+
+### 环境变量
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `PORT` | `3000` | 监听端口 |
+| `HOST` | `0.0.0.0` | 监听地址 |
+| `API_KEY` | (空) | API 鉴权密钥，留空不校验 |
+| `DEFAULT_MODEL` | `claude-4.5-sonnet` | 默认模型 |
+| `TOKEN_FILE` | `/app/token.json` | Token 文件路径 |
+
+### Docker Compose
+
+```yaml
+version: '3.8'
+services:
+  cursoride2api:
+    image: ghcr.io/fengzhiqiu/cursoride2api:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./token.json:/app/token.json:ro
+    environment:
+      - API_KEY=your-secret-key
+    restart: unless-stopped
+```
+
+---
+
 ## 🏗️ 技术原理
 
 本项目基于对 Cursor IDE `workbench.desktop.main.js` 的逆向分析：
